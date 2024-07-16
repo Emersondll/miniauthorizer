@@ -22,6 +22,17 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private CardRepository repository;
 
+    /**
+     * Performs a transaction using the provided transaction model.
+     * This method retrieves the card from the repository, verifies the transaction password,
+     * checks if the card has sufficient balance, deducts the transaction amount from the card's balance,
+     * and saves the updated card back to the repository.
+     *
+     * @param transactionModel The transaction details including card number, password, and transaction amount.
+     * @throws CardException.CardNotFoundException If no card with the specified card number is found in the repository.
+     * @throws PasswordException                   If the provided transaction password does not match the stored password.
+     * @throws BalanceException                    If the card does not have sufficient balance to complete the transaction.
+     */
     @Transactional
     public void performTransaction(final TransactionModel transactionModel) {
         Card card = repository.findById(transactionModel.cardNumber())
@@ -34,12 +45,27 @@ public class TransactionServiceImpl implements TransactionService {
         repository.save(card);
     }
 
+    /**
+     * Checks if the card has sufficient balance to perform the transaction.
+     *
+     * @param transactionModel The transaction details including the amount to be deducted.
+     * @param card             The card for which the balance is checked.
+     * @throws BalanceException If the card does not have sufficient balance to cover the transaction amount.
+     */
     private void checkBalance(TransactionModel transactionModel, Card card) {
         Optional.of(card.getAmount())
                 .filter(amount -> amount.compareTo(transactionModel.amount()) >= 0)
                 .orElseThrow(() -> new BalanceException(ExceptionMessages.INSUFFICIENT_BALANCE));
     }
 
+    /**
+     * Compares the password provided in the transaction model with the stored hashed password of the card.
+     * Throws a PasswordException if the passwords do not match.
+     *
+     * @param transactionModel The transaction model containing the password to compare.
+     * @param card             The card whose password is being verified.
+     * @throws PasswordException If the provided password does not match the stored hashed password.
+     */
     private void comparePassword(TransactionModel transactionModel, Card card) {
         Optional.of(HashUtil.compareHash(transactionModel.cardPassword(), card.getPassword()))
                 .filter(isPasswordCorrect -> isPasswordCorrect)

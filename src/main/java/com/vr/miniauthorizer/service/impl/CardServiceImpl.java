@@ -22,6 +22,13 @@ public class CardServiceImpl implements CardService {
     @Autowired
     private CardRepository repository;
 
+    /**
+     * Creates a new card based on the provided card model.
+     *
+     * @param cardModel The card model containing details of the card to be created.
+     * @return The created CardModel object if successful.
+     * @throws CardException.CardAlreadyExistsException If a card with the same card number already exists in the repository.
+     */
     public CardModel createCard(final CardModel cardModel) {
         if (repository.findById(cardModel.cardNumber()).isPresent()) {
             throw new CardException.CardAlreadyExistsException();
@@ -32,6 +39,12 @@ public class CardServiceImpl implements CardService {
 
     }
 
+    /**
+     * Creates a new Card entity based on the provided CardModel.
+     *
+     * @param cardModel The CardModel containing details for the new Card entity.
+     * @return A new Card entity initialized with values from the CardModel.
+     */
     private Card createNewRegisterDocument(final CardModel cardModel) {
         Card newCard = new Card();
         BeanUtils.copyProperties(cardModel, newCard);
@@ -40,6 +53,13 @@ public class CardServiceImpl implements CardService {
         return newCard;
     }
 
+    /**
+     * Checks the balance for a card based on its card number.
+     *
+     * @param cardNumber The card number for which the balance is to be checked.
+     * @return The current balance of the card.
+     * @throws CardException.CardNotFoundException If no card with the specified card number is found in the repository.
+     */
     public BigDecimal checkBalance(final String cardNumber) {
         Card card = repository.findById(cardNumber)
                 .orElseThrow(() -> new CardException.CardNotFoundException(ExceptionMessages.CARD_NOT_FOUND));

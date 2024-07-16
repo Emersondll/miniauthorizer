@@ -1,24 +1,23 @@
 package com.vr.miniauthorizer.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vr.miniauthorizer.model.TransactionModel;
 import com.vr.miniauthorizer.service.TransactionService;
+import com.vr.miniauthorizer.utils.ExceptionMessages;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import resources.fixtures.TestFixture;
 
 import java.math.BigDecimal;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,43 +26,41 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class TransactionControllerTest {
 
-   @Autowired
-   private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-   @MockBean
-   private TransactionService transactionService;
+    @MockBean
+    private TransactionService transactionService;
 
-   @Test
-   void testPerformTransactionSuccess() throws Exception {
-      doNothing().when(transactionService).performTransaction(any(TransactionModel.class));
-      TransactionModel transaction = new TransactionModel("1234567890", "1234", new BigDecimal("100.00"));
+    @Test
+    @DisplayName("Test Perform Transaction Success")
+    void testPerformTransactionSuccess() throws Exception {
+        doNothing().when(transactionService).performTransaction(any(TransactionModel.class));
+        TransactionModel transaction = new TransactionModel(TestFixture.CARD_NUMBER, TestFixture.CARD_PASSWORD, new BigDecimal(TestFixture.CARD_AMOUNT));
 
-      final String requestBody = writeJson(transaction);
+        final String requestBody = TestFixture.writeJson(transaction);
 
-      mockMvc.perform(post("/transacoes")
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .content(requestBody))
-              .andExpect(status().isCreated())
-              .andExpect(content().string("OK"));
-   }
+        mockMvc.perform(post("/transacoes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(content().string("OK"));
+    }
 
-   @Test
-   void testPerformTransactionFailure() throws Exception {
-      TransactionModel transaction = new TransactionModel("1234567890", "1234", new BigDecimal("100.00"));
-      doThrow(new RuntimeException("Insufficient balance")).when(transactionService).performTransaction(any(TransactionModel.class));
+    @Test
+    @DisplayName("Test Perform Transaction Failure")
+    void testPerformTransactionFailure() throws Exception {
+        TransactionModel transaction = new TransactionModel(TestFixture.CARD_NUMBER, TestFixture.CARD_PASSWORD, new BigDecimal(TestFixture.CARD_AMOUNT));
+        doThrow(new RuntimeException(ExceptionMessages.INSUFFICIENT_BALANCE)).when(transactionService).performTransaction(any(TransactionModel.class));
 
-      final String requestBody = writeJson(transaction);
+        final String requestBody = TestFixture.writeJson(transaction);
 
-      mockMvc.perform(post("/transacoes")
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .content(requestBody))
-              .andExpect(status().isUnprocessableEntity()) // Espera que o status retornado seja 422 (UNPROCESSABLE_ENTITY)
-              .andExpect(content().string("Insufficient balance")); // Verifica se a mensagem de erro está correta
-   }
+        mockMvc.perform(post("/transacoes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(ExceptionMessages.INSUFFICIENT_BALANCE));
+    }
 
-   private String writeJson(TransactionModel transaction) throws JsonProcessingException {
-      ObjectMapper objectMapper = new ObjectMapper();
-      String requestBody = objectMapper.writeValueAsString(transaction);
-      return requestBody;
-   }
+
 }
