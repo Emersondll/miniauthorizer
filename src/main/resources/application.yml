@@ -6,6 +6,6 @@ spring:
       uri: mongodb://localhost:27017/mini-authorizer
 
 values:
-  standardValue: 500.00
+  standardValue: "500.00"
 
 
