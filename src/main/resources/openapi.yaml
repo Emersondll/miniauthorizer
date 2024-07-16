@@ -1,0 +1,110 @@
+openapi: 3.0.0
+info:
+  title: Serviços de Cartão API
+  description: API para operações relacionadas a cartões de crédito
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Servidor local
+
+paths:
+  /cartoes:
+    post:
+      summary: Criar novo cartão
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                numeroCartao:
+                  type: string
+                  example: "6549873025634501"
+                senha:
+                  type: string
+                  example: "1234"
+      responses:
+        '201':
+          description: Criação com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  numeroCartao:
+                    type: string
+                    example: "6549873025634501"
+                  senha:
+                    type: string
+                    example: "1234"
+        '422':
+          description: Caso o cartão já exista
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  numeroCartao:
+                    type: string
+                    example: "6549873025634501"
+                  senha:
+                    type: string
+                    example: "1234"
+
+  /cartoes/{numeroCartao}:
+    get:
+      summary: Obter saldo do Cartão
+      parameters:
+        - in: path
+          name: numeroCartao
+          required: true
+          schema:
+            type: string
+          example: "6549873025634501"
+      responses:
+        '200':
+          description: Obtenção com sucesso
+          content:
+            application/json:
+              schema:
+                type: number
+                example: 495.15
+        '404':
+          description: Caso o cartão não exista
+
+  /transacoes:
+    post:
+      summary: Realizar uma Transação
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                numeroCartao:
+                  type: string
+                  example: "6549873025634501"
+                senhaCartao:
+                  type: string
+                  example: "1234"
+                valor:
+                  type: number
+                  example: 10.00
+      responses:
+        '201':
+          description: Transação realizada com sucesso
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "OK"
+        '422':
+          description: Caso alguma regra de autorização tenha barrado a transação
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "SALDO_INSUFICIENTE|SENHA_INVALIDA|CARTAO_INEXISTENTE"

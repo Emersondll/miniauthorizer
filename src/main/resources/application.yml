@@ -3,7 +3,7 @@ spring:
     name: miniauthorizer
   data:
     mongodb:
-      uri: mongodb://localhost:27017/mini-authorizer
+      uri: mongodb://user:password@localhost:27017/miniautorizador
 
 values:
   standardValue: "500.00"
