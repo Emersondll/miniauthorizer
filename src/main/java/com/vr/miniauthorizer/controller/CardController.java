@@ -1,8 +1,6 @@
 package com.vr.miniauthorizer.controller;
 
-import com.vr.miniauthorizer.document.Card;
-import com.vr.miniauthorizer.model.CardRequestModel;
-import com.vr.miniauthorizer.model.CardResponseModel;
+import com.vr.miniauthorizer.model.CardModel;
 import com.vr.miniauthorizer.service.CardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,9 +22,9 @@ public class CardController {
     private CardService service;
 
     @PostMapping
-    public ResponseEntity<Object> createCard(@RequestBody CardRequestModel card) {
+    public ResponseEntity<Object> createCard(final @RequestBody CardModel card) {
         try {
-            CardResponseModel newCard = service.createCard(card);
+            CardModel newCard = service.createCard(card);
             return new ResponseEntity<>(newCard, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(card, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -34,9 +32,9 @@ public class CardController {
     }
 
     @GetMapping("/{cardNumber}")
-    public ResponseEntity<BigDecimal> getBalance(@PathVariable String cardNumber) {
+    public ResponseEntity<BigDecimal> checkBalance(final @PathVariable String cardNumber) {
         try {
-            BigDecimal balance = service.getBalance(cardNumber);
+            BigDecimal balance = service.checkBalance(cardNumber);
             return new ResponseEntity<>(balance, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 
 public record TransactionModel(@JsonProperty("numeroCartao") String cardNumber,
-                               @JsonProperty("senha") String cardPassword,
-                               @JsonProperty("BigDecimal") BigDecimal amount) {
+                               @JsonProperty("senhaCartao") String cardPassword,
+                               @JsonProperty("valor") BigDecimal amount) {
 
 
 }

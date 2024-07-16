@@ -18,7 +18,7 @@ public class TransactionController {
     private TransactionService service;
 
     @PostMapping
-    public ResponseEntity<String> performTransaction(@RequestBody TransactionModel transactionModel) {
+    public ResponseEntity<String> performTransaction(final @RequestBody TransactionModel transactionModel) {
         try {
             service.performTransaction(transactionModel);
             return new ResponseEntity<>("OK", HttpStatus.CREATED);
