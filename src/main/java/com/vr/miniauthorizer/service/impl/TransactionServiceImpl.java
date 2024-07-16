@@ -30,8 +30,13 @@ public class TransactionServiceImpl implements TransactionService {
      *
      * @param transactionModel The transaction details including card number, password, and transaction amount.
      * @throws CardException.CardNotFoundException If no card with the specified card number is found in the repository.
-     * @throws PasswordException                   If the provided transaction password does not match the stored password.
-     * @throws BalanceException                    If the card does not have sufficient balance to complete the transaction.
+     * @throws PasswordException If the provided transaction password does not match the stored password.
+     * @throws BalanceException If the card does not have sufficient balance to complete the transaction.
+     *
+     * @implNote This method is annotated with @Transactional to ensure all operations within
+     *           it are executed within a single transaction. If any exception occurs during
+     *           the transaction process, all changes will be rolled back automatically,
+     *           maintaining data consistency.
      */
     @Transactional
     public void performTransaction(final TransactionModel transactionModel) {
