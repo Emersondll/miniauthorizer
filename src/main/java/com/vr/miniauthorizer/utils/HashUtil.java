@@ -24,7 +24,7 @@ public class HashUtil {
             byte[] encodedHash = digest.digest(input.getBytes());
             return Base64.getEncoder().encodeToString(encodedHash);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(ExceptionMessages.ERROR_WHILE_HASHING_STRING, e);
+            throw new IllegalStateException(ExceptionMessages.ERROR_WHILE_HASHING_STRING, e);
         }
     }
 
